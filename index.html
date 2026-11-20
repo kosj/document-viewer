@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>문서 뷰어 · 편집기 — Word · Excel · 한글</title>
+<meta name="description" content="브라우저에서 MS Word(.docx), Excel(.xlsx, .xls, .csv), 한글(.hwp, .hwpx) 파일을 열어 보고 편집하고 저장합니다. 파일은 서버로 전송되지 않습니다.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='5' y='2' width='22' height='28' rx='3' fill='%232563eb'/%3E%3Cpath d='M10 10h12M10 15h12M10 20h8' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="appbar">
+  <div class="brand" id="brand" title="처음 화면">
+    <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><rect x="5" y="2" width="22" height="28" rx="3" fill="#2563eb"/><path d="M10 10h12M10 15h12M10 20h8" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+    <span>문서 편집기</span>
+  </div>
+  <div class="appbar-actions">
+    <button class="btn" id="btn-open" title="열기 (Ctrl+O)">
+      <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>열기</span>
+    </button>
+    <div class="menu-wrap">
+      <button class="btn" id="btn-new" aria-haspopup="true">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>새로 만들기</span>
+      </button>
+      <div class="menu" id="menu-new" hidden>
+        <button data-new="docx"><i class="fi fi-word">W</i>Word 문서 (.docx)</button>
+        <button data-new="xlsx"><i class="fi fi-excel">X</i>Excel 통합 문서 (.xlsx)</button>
+        <button data-new="hwpx"><i class="fi fi-hwp">한</i>한글 문서 (.hwpx)</button>
+      </div>
+    </div>
+    <div class="menu-wrap">
+      <div class="split">
+        <button class="btn primary" id="btn-save" title="저장 (Ctrl+S)" disabled>
+          <svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3M7 21v-7h10v7"/></svg><span>저장</span>
+        </button>
+        <button class="btn primary caret" id="btn-save-as" title="다른 형식으로 저장" disabled aria-haspopup="true">▾</button>
+      </div>
+      <div class="menu right" id="menu-save" hidden></div>
+    </div>
+    <button class="btn icon-only" id="btn-print" title="인쇄 / PDF로 저장" disabled>
+      <svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><path d="M6 14h12v7H6z"/></svg>
+    </button>
+  </div>
+  <input type="file" id="file-input" multiple hidden
+    accept=".docx,.hwp,.hwpx,.xlsx,.xlsm,.xls,.csv,.ods,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv">
+</header>
+
+<nav class="tabs" id="tabs" hidden></nav>
+
+<main id="workspace">
+  <section class="home" id="home">
+    <div class="home-inner">
+      <h1>Word · Excel · 한글 파일을<br>브라우저에서 바로 보고 편집하세요</h1>
+      <p class="lead">설치 없이 문서를 열고, 고치고, 원하는 형식으로 저장할 수 있습니다.</p>
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="파일 열기">
+        <svg viewBox="0 0 24 24" width="44" height="44"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+        <strong>파일을 여기로 끌어다 놓거나 눌러서 선택하세요</strong>
+        <span>.docx · .xlsx · .xls · .csv · .hwp · .hwpx</span>
+      </div>
+      <div class="cards">
+        <button class="card" data-new="docx"><i class="fi fi-word">W</i><b>새 Word 문서</b><small>.docx로 저장</small></button>
+        <button class="card" data-new="xlsx"><i class="fi fi-excel">X</i><b>새 Excel 통합 문서</b><small>.xlsx로 저장</small></button>
+        <button class="card" data-new="hwpx"><i class="fi fi-hwp">한</i><b>새 한글 문서</b><small>.hwpx로 저장</small></button>
+      </div>
+      <ul class="features">
+        <li><b>Word</b> 서식(굵게·색·크기), 제목, 목록, 표, 그림을 편집하고 .docx·.hwpx로 저장</li>
+        <li><b>Excel</b> 여러 시트, 수식(SUM·IF·VLOOKUP 등 60여 개), 셀 서식, 병합을 편집하고 .xlsx·.csv로 저장</li>
+        <li><b>한글</b> .hwp(5.0)·.hwpx 문서를 열어 편집하고 .hwpx·.docx로 저장</li>
+        <li><b>개인정보 보호</b> 파일은 서버로 보내지 않고 이 브라우저 안에서만 처리됩니다</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<div id="drop-overlay" hidden><div>여기에 놓으면 파일을 엽니다</div></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="print-area"></div>
+
+<script src="vendor/jszip.min.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/docx-preview.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/hwpx-template.js"></script>
+<script src="js/model.js"></script>
+<script src="js/word.js"></script>
+<script src="js/hwpx.js"></script>
+<script src="js/hwp.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/formula.js"></script>
+<script src="js/xlsx-io.js"></script>
+<script src="js/sheet.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
